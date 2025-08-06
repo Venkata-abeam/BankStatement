@@ -1,0 +1,1 @@
+using srv.bankstatementapi as service from '../../srv/bankstatementapi';

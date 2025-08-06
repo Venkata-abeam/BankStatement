@@ -1,0 +1,57 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog
+		id="ccodeVHDialog"
+		title="Select Company Codes" contentWidth="50%">
+		<content>
+            <VBox id="formprodContainer" >
+                <Table id="idccodevaluehelp" width="auto" mode="MultiSelect" inset="false" enableBusyIndicator="true"
+                    sticky="ColumnHeaders,HeaderToolbar"
+                    growing="true"
+                    alternateRowColors="true"
+                    showNoData="true"
+					selectionChange="OnVHccodeSelected"
+                    items="{
+                            path: 'CompanyCodes>/'
+                        }">
+                        <headerToolbar>
+								<OverflowToolbar id="id_tabletoolbar2">
+									<SearchField id="id_ccode_search" search="onccodeSearch" change="onccodeSearch" placeholder="Search Company Codes" width="90%" />
+									<Button id="id_deselect" type="Emphasized" icon="sap-icon://clear-all" tooltip="Clear All" press="onclearccodeVH"/>
+								</OverflowToolbar>
+						</headerToolbar>
+                        <columns>
+								<Column id="id_ccodevh_key1" >
+									<Text id="id_ccode_key" text="Company Code"/>
+								</Column>
+                                <Column id="id_ccodevh_desc1">
+                                    <Text id="id_ccode_desc" text="CompanyCode Name"/>
+								</Column>
+						</columns>
+                        <items>
+							<ColumnListItem id="id_ccodevaluecolumns1" vAlign="Middle">
+								<cells>
+                                    <Text  id="id_ccodekey_text"  text="{CompanyCodes>CompanyCode}" />
+                                    <Text  id="id_ccodedesc_text"  text="{CompanyCodes>CompanyCodeName}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                </Table>
+            </VBox>
+        </content>
+        <footer>
+			<Toolbar id="id_toolbar1">
+				<content>
+                    <MultiInput id="id_ccode_value_help" showValueHelp="false" placeholder="Company Codes Selected" />
+					<ToolbarSpacer id="id_spacer1" />
+					<Button id="id_ccodesave" type="Emphasized"
+							text="ok"
+							press="okccodeVHDialog" />
+					<Button id="id_ccodereject"
+						text="close"
+						type="Reject"
+						press="closeccodeVHDialog" />
+				</content>
+			</Toolbar>
+		</footer>
+    </Dialog>
+</core:FragmentDefinition>

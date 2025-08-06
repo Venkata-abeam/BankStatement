@@ -1,0 +1,548 @@
+{
+ "meta": {
+  "creator": "cds-dk 9.1.1"
+ },
+ "$version": "2.0",
+ "definitions": {
+  "BUSINESSUSER_0001": {
+   "kind": "service",
+   "@cds.external": true,
+   "@Common.ApplyMultiUnitBehaviorForSortingAndFiltering": true,
+   "@Capabilities.FilterFunctions": [
+    "eq",
+    "ne",
+    "gt",
+    "ge",
+    "lt",
+    "le",
+    "and",
+    "or",
+    "contains",
+    "startswith",
+    "endswith",
+    "any",
+    "all"
+   ],
+   "@Capabilities.SupportedFormats": [
+    "application/json",
+    "application/pdf"
+   ],
+   "@PDF.Features": {
+    "DocumentDescriptionReference": "../../../../default/iwbep/common/0001/$metadata",
+    "DocumentDescriptionCollection": "MyDocumentDescriptions",
+    "ArchiveFormat": true,
+    "Border": true,
+    "CoverPage": true,
+    "FitToPage": true,
+    "FontName": true,
+    "FontSize": true,
+    "HeaderFooter": true,
+    "IANATimezoneFormat": true,
+    "Margin": true,
+    "Padding": true,
+    "ResultSizeDefault": 20000,
+    "ResultSizeMaximum": 20000,
+    "Signature": true,
+    "TextDirectionLayout": true,
+    "Treeview": true,
+    "UploadToFileShare": true
+   },
+   "@Capabilities.KeyAsSegmentSupported": true,
+   "@Capabilities.AsynchronousRequestsSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUserApplicationJobs": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "UserID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User ID",
+     "@Common.QuickInfo": "Business User ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Background User for Authorization Check",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=BTCAUTHNAM"
+    },
+    "ApplicationJob": {
+     "key": true,
+     "type": "cds.String",
+     "length": 32,
+     "notNull": true,
+     "@Common.Label": "Application Job",
+     "@Common.QuickInfo": "Application Job",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Background Job Name",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=BTCJOB"
+    },
+    "ApplicationJobDescription": {
+     "type": "cds.String",
+     "length": 120,
+     "notNull": true,
+     "@Common.Label": "Application Job Description",
+     "@Common.QuickInfo": "Application Job Description",
+     "@Common.Heading": "Description"
+    },
+    "ApplicationJobTemplate": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Application Job Template",
+     "@Common.QuickInfo": "Application Job Template",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Application Job Template Name",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=APJ_JOB_TEMPLATE_NAME"
+    },
+    "ApplicationJobTemplateText": {
+     "type": "cds.String",
+     "length": 120,
+     "notNull": true,
+     "@Common.Label": "Application Job Template Text",
+     "@Common.QuickInfo": "Application Job Template Text",
+     "@Common.Heading": "Job Template"
+    }
+   },
+   "@Common.Label": "Application Jobs",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUserAutoLockStatus": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "BusinessUserAutoLockStatus": {
+     "key": true,
+     "type": "cds.Boolean",
+     "notNull": true,
+     "@Common.Label": "Business User Auto Lock Status",
+     "@Common.QuickInfo": "Business User Auto Lock Status"
+    }
+   },
+   "@Common.Label": "Business User Auto Lock Status",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUserBusinessCatalogs": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "UserID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User ID",
+     "@Common.QuickInfo": "Business User ID",
+     "@Common.IsUpperCase": true
+    },
+    "BusinessCatalogID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 35,
+     "notNull": true,
+     "@Common.Label": "Business Catalog ID",
+     "@Common.QuickInfo": "Business Catalog ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Business Catalog ID"
+    }
+   },
+   "@Common.Label": "Business Catalogs",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUserBusinessRoles": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "UserID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User ID",
+     "@Common.QuickInfo": "Business User ID",
+     "@Common.IsUpperCase": true
+    },
+    "BusinessRoleID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Business Role ID",
+     "@Common.QuickInfo": "Business Role ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Business Role ID"
+    }
+   },
+   "@Common.Label": "Business Roles",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUserIAMApps": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "UserID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User ID",
+     "@Common.QuickInfo": "Business User ID",
+     "@Common.IsUpperCase": true
+    },
+    "AppID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 35,
+     "notNull": true,
+     "@Common.Label": "App ID",
+     "@Common.QuickInfo": "App ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "IAM App ID"
+    },
+    "AppType": {
+     "type": "cds.String",
+     "length": 60,
+     "notNull": true,
+     "@Common.Label": "App Type",
+     "@Common.QuickInfo": "App Type",
+     "@Common.Heading": "Short Description",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=VAL_TEXT"
+    }
+   },
+   "@Common.Label": "Apps",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true
+  },
+  "BUSINESSUSER_0001.BusinessUsers": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "elements": {
+    "UserID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User ID",
+     "@Common.QuickInfo": "Business User ID",
+     "@Common.IsUpperCase": true
+    },
+    "UserName": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Business User Name",
+     "@Common.QuickInfo": "Business User Name",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "User ID alias",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=USALIAS"
+    },
+    "Description": {
+     "type": "cds.String",
+     "length": 81,
+     "notNull": true,
+     "@Common.Label": "Business User Description",
+     "@Common.QuickInfo": "Business User Description"
+    },
+    "FirstName": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "First Name",
+     "@Common.QuickInfo": "First Name",
+     "@Common.Heading": "First Name"
+    },
+    "LastName": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Last Name",
+     "@Common.QuickInfo": "Last Name",
+     "@Common.Heading": "Last Name"
+    },
+    "EMailAddress": {
+     "type": "cds.String",
+     "length": 241,
+     "notNull": true,
+     "@Common.Label": "Business User EMail",
+     "@Common.QuickInfo": "Business User EMail",
+     "@Common.Heading": "Email Address",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=AD_SMTPADR"
+    },
+    "GlobalUserID": {
+     "type": "cds.String",
+     "length": 36,
+     "notNull": true,
+     "@Common.Label": "Business User Global ID",
+     "@Common.QuickInfo": "Business User Global ID",
+     "@Common.Heading": "Global User ID",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=SUID_GLOBALUID"
+    },
+    "BusinessUserGroup": {
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Business User Group",
+     "@Common.QuickInfo": "Business User Group",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "User Master Maintenance: User Group",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=XUCLASS"
+    },
+    "PriceCategoryCode": {
+     "type": "cds.String",
+     "length": 30,
+     "notNull": true,
+     "@Common.Label": "Price Category Code",
+     "@Common.QuickInfo": "Price Category Code",
+     "@Common.IsUpperCase": true
+    },
+    "PriceCategory": {
+     "type": "cds.String",
+     "length": 80,
+     "notNull": true,
+     "@Common.Label": "Price Category",
+     "@Common.QuickInfo": "Price Category",
+     "@Common.Heading": "Description"
+    },
+    "LockStatus": {
+     "type": "cds.Boolean",
+     "notNull": true,
+     "@Common.Label": "Lock Status",
+     "@Common.QuickInfo": "Business User Lock Status"
+    },
+    "Validity": {
+     "type": "cds.Boolean",
+     "notNull": true,
+     "@Common.Label": "Validity",
+     "@Common.QuickInfo": "Business User Validity"
+    },
+    "IsLoggedOn": {
+     "type": "cds.Boolean",
+     "notNull": true,
+     "@Common.Label": "Is Logged On",
+     "@Common.QuickInfo": "Business User Is Logged On"
+    },
+    "NeverLoggedOn": {
+     "type": "cds.Boolean",
+     "notNull": true,
+     "@Common.Label": "Never Logged On",
+     "@Common.QuickInfo": "Business User Never Logged On"
+    },
+    "ValidFromDate": {
+     "type": "cds.Date",
+     "@Common.Label": "Valid From",
+     "@Common.QuickInfo": "Valid To",
+     "@Common.Heading": "Valid from",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=XUGLTGV"
+    },
+    "ValidToDate": {
+     "type": "cds.Date",
+     "@Common.Label": "Valid To",
+     "@Common.QuickInfo": "Valid To",
+     "@Common.Heading": "Valid to",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=XUGLTGB"
+    },
+    "LastLogonDateTime": {
+     "type": "cds.Date",
+     "@Common.Label": "Last Logon DateTime",
+     "@Common.QuickInfo": "Last Logon DateTime",
+     "@Common.Heading": "Last Logon Date"
+    },
+    "CreationDateTime": {
+     "type": "cds.DateTime",
+     "@odata.Precision": 0,
+     "@odata.Type": "Edm.DateTimeOffset",
+     "@Common.Label": "Creation DateTime",
+     "@Common.QuickInfo": "Creation DateTime",
+     "@Common.Heading": "Creation Date of User Master"
+    },
+    "CreationByUserID": {
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Creation By User ID",
+     "@Common.QuickInfo": "Creation by User ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Creator of User Master Record"
+    },
+    "CreationByUserName": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Creation By User Name",
+     "@Common.QuickInfo": "Creation by User Name",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "User ID alias",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=USALIAS"
+    },
+    "CreationByUserDescription": {
+     "type": "cds.String",
+     "length": 80,
+     "notNull": true,
+     "@Common.Label": "Creation By User Description",
+     "@Common.QuickInfo": "Creation by User Description",
+     "@Common.Heading": "Description of the Technical User Account"
+    },
+    "CreationByEMailAddress": {
+     "type": "cds.String",
+     "length": 241,
+     "notNull": true,
+     "@Common.Label": "Creation By EMail",
+     "@Common.QuickInfo": "Creation by EMail Address",
+     "@Common.Heading": "Email Address",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=AD_SMTPADR"
+    },
+    "CreationByGlobalUserID": {
+     "type": "cds.String",
+     "length": 36,
+     "notNull": true,
+     "@Common.Label": "Creation By GlobalUserID",
+     "@Common.QuickInfo": "Creation by GlobalUserID",
+     "@Common.Heading": "Global User ID",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=SUID_GLOBALUID"
+    },
+    "LastChangedDateTime": {
+     "type": "cds.DateTime",
+     "@odata.Precision": 0,
+     "@odata.Type": "Edm.DateTimeOffset",
+     "@Common.Label": "Last Changed DateTime",
+     "@Common.QuickInfo": "Last Changed DateTime",
+     "@Common.Heading": "Time Stamp",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=TIMESTAMP"
+    },
+    "LastChangedByUserID": {
+     "type": "cds.String",
+     "length": 12,
+     "notNull": true,
+     "@Common.Label": "Last Changed By User ID",
+     "@Common.QuickInfo": "Last Changed by User ID",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "Changed By"
+    },
+    "LastChangedByUserName": {
+     "type": "cds.String",
+     "length": 40,
+     "notNull": true,
+     "@Common.Label": "Last Changed By User Name",
+     "@Common.QuickInfo": "Last Changed by User Name",
+     "@Common.IsUpperCase": true,
+     "@Common.Heading": "User ID alias",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=USALIAS"
+    },
+    "LastChangedByUserDescription": {
+     "type": "cds.String",
+     "length": 80,
+     "notNull": true,
+     "@Common.Label": "Last Changed By User Description",
+     "@Common.QuickInfo": "Last Changed by User Description",
+     "@Common.Heading": "Description of the Technical User Account"
+    },
+    "LastChangedByEMailAddress": {
+     "type": "cds.String",
+     "length": 241,
+     "notNull": true,
+     "@Common.Label": "Last Changed By EMail",
+     "@Common.QuickInfo": "Last Changed by EMail Address",
+     "@Common.Heading": "Email Address",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=AD_SMTPADR"
+    },
+    "LastChangedByGlobalUserID": {
+     "type": "cds.String",
+     "length": 36,
+     "notNull": true,
+     "@Common.Label": "Last Changed By GlobalUserID",
+     "@Common.QuickInfo": "Last Changed by GlobalUserID",
+     "@Common.Heading": "Global User ID",
+     "@Common.DocumentationRef": "urn:sap-com:documentation:key?=type=DE&id=SUID_GLOBALUID"
+    },
+    "ApplicationJobs": {
+     "type": "cds.Association",
+     "target": "BUSINESSUSER_0001.BusinessUserApplicationJobs",
+     "cardinality": {
+      "max": "*"
+     },
+     "keys": []
+    },
+    "BusinessCatalogs": {
+     "type": "cds.Association",
+     "target": "BUSINESSUSER_0001.BusinessUserBusinessCatalogs",
+     "cardinality": {
+      "max": "*"
+     },
+     "keys": []
+    },
+    "BusinessRoles": {
+     "type": "cds.Association",
+     "target": "BUSINESSUSER_0001.BusinessUserBusinessRoles",
+     "cardinality": {
+      "max": "*"
+     },
+     "keys": []
+    },
+    "IAMApps": {
+     "type": "cds.Association",
+     "target": "BUSINESSUSER_0001.BusinessUserIAMApps",
+     "cardinality": {
+      "max": "*"
+     },
+     "keys": []
+    }
+   },
+   "@Common.Label": "Business Users",
+   "@Capabilities.SearchRestrictions.Searchable": false,
+   "@Capabilities.InsertRestrictions.Insertable": false,
+   "@Capabilities.DeleteRestrictions.Deletable": false,
+   "@Capabilities.UpdateRestrictions.Updatable": false,
+   "@Capabilities.UpdateRestrictions.NonUpdatableNavigationProperties": [
+    "ApplicationJobs",
+    "BusinessCatalogs",
+    "BusinessRoles",
+    "IAMApps"
+   ],
+   "@Capabilities.UpdateRestrictions.QueryOptions.SelectSupported": true,
+   "@Capabilities.FilterRestrictions.FilterExpressionRestrictions": [
+    {
+     "Property": {
+      "=": "EMailAddress"
+     },
+     "AllowedExpressions": "MultiValue"
+    },
+    {
+     "Property": {
+      "=": "CreationByEMailAddress"
+     },
+     "AllowedExpressions": "MultiValue"
+    },
+    {
+     "Property": {
+      "=": "LastChangedByEMailAddress"
+     },
+     "AllowedExpressions": "MultiValue"
+    }
+   ]
+  }
+ }
+}

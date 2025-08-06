@@ -1,0 +1,125 @@
+{
+ "meta": {
+  "creator": "cds-dk 9.1.1"
+ },
+ "$version": "2.0",
+ "definitions": {
+  "YY1_HOUSEBANKLISTAPI_CDS_0001": {
+   "kind": "service",
+   "@cds.external": true,
+   "@m.IsDefaultEntityContainer": "true",
+   "@sap.message.scope.supported": "true",
+   "@sap.supported.formats": "atom json xlsx"
+  },
+  "YY1_HOUSEBANKLISTAPI_CDS_0001.YY1_HOUSEBANKLISTAPI": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "@sap.creatable": "false",
+   "@sap.updatable": "false",
+   "@sap.deletable": "false",
+   "@sap.content.version": "1",
+   "@sap.label": "HOUSEBANKLISTAPI",
+   "elements": {
+    "CompanyCode": {
+     "key": true,
+     "type": "cds.String",
+     "length": 4,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.text": "CompanyCodeName",
+     "@sap.label": "Company Code",
+     "notNull": true
+    },
+    "HouseBank": {
+     "key": true,
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank",
+     "@sap.quickinfo": "Short Key for a House Bank",
+     "notNull": true
+    },
+    "HouseBankAccount": {
+     "key": true,
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank Account",
+     "notNull": true
+    },
+    "CompanyCodeName": {
+     "type": "cds.String",
+     "length": 25,
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Company Name",
+     "@sap.quickinfo": "Name of Company Code or Company"
+    },
+    "BankAccountInternalID": {
+     "type": "cds.String",
+     "length": 10,
+     "@sap.display.format": "NonNegative",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Technical ID",
+     "@sap.quickinfo": "Bank Account Technical ID"
+    },
+    "BankInternalID": {
+     "type": "cds.String",
+     "length": 15,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.text": "BankName",
+     "@sap.label": "Bank Key",
+     "@sap.quickinfo": "Bank Keys"
+    },
+    "BankCountry": {
+     "type": "cds.String",
+     "length": 3,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Bank Country/Region",
+     "@sap.quickinfo": "Bank Country/Region Key"
+    },
+    "BankNumber": {
+     "type": "cds.String",
+     "length": 15,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Bank Number"
+    },
+    "BankAccount": {
+     "type": "cds.String",
+     "length": 18,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.text": "BankAccountDescription",
+     "@sap.label": "Bank Account",
+     "@sap.quickinfo": "Bank Account Number"
+    },
+    "GLAccount": {
+     "type": "cds.String",
+     "length": 10,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "G/L Account",
+     "@sap.quickinfo": "General Ledger Account"
+    },
+    "BankName": {
+     "type": "cds.String",
+     "length": 60,
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Bank Name",
+     "@sap.quickinfo": "Name of Financial Institution"
+    },
+    "BankAccountDescription": {
+     "type": "cds.String",
+     "length": 60,
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Account Description"
+    }
+   }
+  }
+ }
+}

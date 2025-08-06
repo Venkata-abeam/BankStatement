@@ -1,0 +1,138 @@
+{
+ "meta": {
+  "creator": "cds-dk 9.1.1"
+ },
+ "$version": "2.0",
+ "definitions": {
+  "YY1_BANKSTATEMENTAPI_CDS_0001": {
+   "kind": "service",
+   "@cds.external": true,
+   "@m.IsDefaultEntityContainer": "true",
+   "@sap.message.scope.supported": "true",
+   "@sap.supported.formats": "atom json xlsx"
+  },
+  "YY1_BANKSTATEMENTAPI_CDS_0001.YY1_BANKSTATEMENTAPI": {
+   "kind": "entity",
+   "@cds.external": true,
+   "@cds.persistence.skip": true,
+   "@sap.creatable": "false",
+   "@sap.updatable": "false",
+   "@sap.deletable": "false",
+   "@sap.content.version": "1",
+   "@sap.label": "BANKSTATEMENTAPI",
+   "elements": {
+    "BankStatementShortID": {
+     "key": true,
+     "type": "cds.String",
+     "length": 8,
+     "@sap.display.format": "NonNegative",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Short Key",
+     "@sap.quickinfo": "Short Key for Bank Statement (Surrogate Key)",
+     "notNull": true
+    },
+    "CompanyCode": {
+     "type": "cds.String",
+     "length": 4,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Company Code"
+    },
+    "HouseBank": {
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank",
+     "@sap.quickinfo": "Short Key for a House Bank"
+    },
+    "HouseBankAccount": {
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank Acct ID",
+     "@sap.quickinfo": "House Bank Account ID"
+    },
+    "BankStatementDate": {
+     "type": "cds.Date",
+     "@sap.display.format": "Date",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Bank Statement Date"
+    },
+    "OpeningBalanceAmtInTransCrcy": {
+     "type": "cds.Decimal",
+     "precision": 24,
+     "scale": 3,
+     "@sap.required.in.filter": "false",
+     "@sap.unit": "Currency",
+     "@sap.label": "Opening Balance",
+     "@sap.quickinfo": "Opening Balance Amount"
+    },
+    "ClosingBalanceAmtInTransCrcy": {
+     "type": "cds.Decimal",
+     "precision": 24,
+     "scale": 3,
+     "@sap.required.in.filter": "false",
+     "@sap.unit": "Currency",
+     "@sap.label": "Ending Bal.Amount",
+     "@sap.quickinfo": "Ending Balance Amount"
+    },
+    "Currency": {
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Currency",
+     "@sap.quickinfo": "Currency Key",
+     "@sap.semantics": "currency-code"
+    },
+    "CompanyCode_1": {
+     "type": "cds.String",
+     "length": 4,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Company Code"
+    },
+    "HouseBank_1": {
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank",
+     "@sap.quickinfo": "Short Key for a House Bank"
+    },
+    "HouseBankAccount_1": {
+     "type": "cds.String",
+     "length": 5,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "House Bank Account"
+    },
+    "GLAccount": {
+     "type": "cds.String",
+     "length": 10,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.label": "G/L Account",
+     "@sap.quickinfo": "General Ledger Account"
+    },
+    "BankAccount": {
+     "type": "cds.String",
+     "length": 18,
+     "@sap.display.format": "UpperCase",
+     "@sap.required.in.filter": "false",
+     "@sap.text": "BankAccountDescription",
+     "@sap.label": "Bank Account",
+     "@sap.quickinfo": "Bank Account Number"
+    },
+    "BankAccountDescription": {
+     "type": "cds.String",
+     "length": 60,
+     "@sap.required.in.filter": "false",
+     "@sap.label": "Account Description"
+    }
+   }
+  }
+ }
+}

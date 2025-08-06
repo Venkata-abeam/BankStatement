@@ -1,0 +1,186 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "bankstatement",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.18.2",
+      "toolsId": "69602590-636d-4b7b-b657-581a15446c56"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v2/bankstatementapi/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "2.0"
+        }
+      },
+      "HouseBankVH": {
+        "uri": "/odata/v2/housebankVH/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "2.0"
+        }
+      },
+      "HouseBankAccVH": {
+        "uri": "/odata/v2/bankaccountVH/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "2.0"
+        }
+      },
+      "CompanyCodeVH": {
+        "uri": "/odata/v2/companyCodeVH/",
+        "type": "OData",
+        "settings": {
+          "useBatch": false,
+          "annotations": [],
+          "odataVersion": "2.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "bankstatement-manage": {
+          "semanticObject": "bankstatement",
+          "action": "manage",
+          "title": "{{bankstatement-manage.flpTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.138.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "bankstatement.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "HouseBankVH": {
+        "dataSource": "HouseBankVH",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "HouseBankAccVH": {
+        "dataSource": "HouseBankAccVH",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "CompanyCodeVH": {
+        "dataSource": "CompanyCodeVH",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "bankstatement.view",
+        "async": true,
+        "viewPath": "bankstatement.view"
+      },
+      "routes": [
+        {
+          "name": "Routebankstatement_view",
+          "pattern": ":?query:",
+          "target": [
+            "Targetbankstatement_view"
+          ]
+        }
+      ],
+      "targets": {
+        "Targetbankstatement_view": {
+          "id": "bankstatement_view",
+          "name": "bankstatement_view"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "bankstatement.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "bankstatement"
+  }
+}
