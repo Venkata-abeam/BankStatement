@@ -126,7 +126,8 @@ module.exports = cds.service.impl(async function (srv) {
 
     var bankStatementResults = await bankstatementFunction(bankStatementsfilteredData);
     //console.log('---------------------------bankStatementResults');
-
+    var glAccountsfilter = [];
+    glAccountsfilter = bankStatementResults.map(item => item.glAccount);
     const bankGLLines = await yy1_BankgllineapiApi.requestBuilder().getAll().top(9999999).select(
       yy1_BankgllineapiApi.schema.ALL_FIELDS
     ).filter(
@@ -144,6 +145,11 @@ module.exports = cds.service.impl(async function (srv) {
         or(
           ...houseBankAccfilter.map(housebankAcc =>
             yy1_BankgllineapiApi.schema.HOUSE_BANK_ACCOUNT.equals(housebankAcc)
+          )
+        ),
+        or(
+          ...glAccountsfilter.map(glacc =>
+            yy1_BankgllineapiApi.schema.GL_ACCOUNT.equals(glacc)
           )
         ),
         and(yy1_BankgllineapiApi.schema.POSTING_DATE.lessOrEqual(defaultEnd),
