@@ -21,7 +21,7 @@ sap.ui.define([
     "sap/ui/export/Spreadsheet",
     "sap/m/MessageBox"
 ], (Controller, coreLibrary, exportLibrary, mobileLibrary, Dialog, Button, Text, Sorter, Filter, SearchField, UIColumn, MColumn, Label,
-    TypeString, compLibrary, FilterOperator, Fragment, Message, Container, Spreadsheet, MessageBox ) => {
+    TypeString, compLibrary, FilterOperator, Fragment, Message, Container, Spreadsheet, MessageBox) => {
     "use strict";
     var DateoModel, DateValue1, DateValue2;
     var ValueState = coreLibrary.ValueState, EdmType = exportLibrary.EdmType, DialogType = mobileLibrary.DialogType;
@@ -32,7 +32,7 @@ sap.ui.define([
         text: "Please wait..."
     })
     return Controller.extend("bankstatement.controller.bankstatement_view", {
-        onInit() {
+        async onInit() {
             DateoModel = new sap.ui.model.json.JSONModel({
                 start: '',
                 end: ''
@@ -42,15 +42,21 @@ sap.ui.define([
                 if (oUserInfo) {
                     userEMail = oUserInfo.getEmail();
                     if (!userEMail) {
-                        userEMail = 'jzhou@gradiant.com';
+                        userEMail = 'vgedala@abeam.com';
                     }
                 } else {
-                    userEMail = 'jzhou@gradiant.com';
+                    userEMail = 'vgedala@abeam.com';
                 }
             } else {
-                userEMail = 'jzhou@gradiant.com';
+                userEMail = 'vgedala@abeam.com';
             }
-        },
+            var aFilter = [];
+            var ouserFilter = new sap.ui.model.Filter("EmailAddress", "EQ", userEMail);
+            aFilter.push(ouserFilter);
+            var ocCodeModel = this.getOwnerComponent().getModel("CompanyCodeVH");
+            let companyCodeVHresults = await this._getCompanyCode(ocCodeModel, aFilter);
+            console.log(companyCodeVHresults);
+        },        
         handleDateChange: function (oEvent) {
             var that = this;
             var oRangeDate = [],
@@ -59,7 +65,8 @@ sap.ui.define([
                 svalue = oEvent.getParameter("value"),
                 bValid = oEvent.getParameter("valid"),
                 oEventSource = oEvent.getSource();
-
+            var results = [];
+            this._originaldata = results;
             if (bValid) {
                 oEventSource.setValueState(ValueState.None);
                 oEventSource.setValueStateText("");
@@ -85,7 +92,7 @@ sap.ui.define([
                 var oHouseBankModel = this.getOwnerComponent().getModel("HouseBankVH");
                 oBusyDialog.open();
                 var oCompanyCodeMulti = [];
-                cCode.map(function (oToken){
+                cCode.map(function (oToken) {
                     oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
                 });
                 oCompanyCodefilter = new sap.ui.model.Filter({
@@ -164,11 +171,11 @@ sap.ui.define([
             var oView = this.getView();
             var that = this;
             var aFilter = [], oCompanyCodeFilter, oHouseBankFilter;
-            var oCompanyCodeMulti = [],oHouseBankMulti = [];
-            var oHouseBankAcc  = oView.byId("id_housebank").getTokens();
-            var oCompanyCoode  = oView.byId("id_companyCode").getTokens();
+            var oCompanyCodeMulti = [], oHouseBankMulti = [];
+            var oHouseBankAcc = oView.byId("id_housebank").getTokens();
+            var oCompanyCoode = oView.byId("id_companyCode").getTokens();
             if (oHouseBankAcc.length > 0) {
-                oCompanyCoode.map(function (oToken){
+                oCompanyCoode.map(function (oToken) {
                     oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
                 });
                 oCompanyCodeFilter = new sap.ui.model.Filter({
@@ -176,7 +183,7 @@ sap.ui.define([
                     and: false
                 });
                 aFilter.push(oCompanyCodeFilter);
-                oHouseBankAcc.map(function (oToken){
+                oHouseBankAcc.map(function (oToken) {
                     oHouseBankMulti.push(new sap.ui.model.Filter("HouseBank", "EQ", oToken.getText()));
                 });
                 oHouseBankFilter = new sap.ui.model.Filter({
@@ -279,7 +286,7 @@ sap.ui.define([
                 oDialog.open();
             });
         },
-        onValueHelpCCodeClose: function (oEvent) {  
+        onValueHelpCCodeClose: function (oEvent) {
             var oSelectedItem = oEvent.getParameter("selectedItem");
             var sCode = this.getView().byId('id_companyCode');
             if (oSelectedItem) {
@@ -318,7 +325,7 @@ sap.ui.define([
         _getBankStatement: async function (oBankModel, oFilter) {
             return new Promise((resolve, reject) => {
                 oBankModel.read("/BankStatement", {
-                    filters: oFilter,
+                    filters: [oFilter],
                     urlParameters: { "$top": 999999 },
                     success: function (response) {
                         resolve(response.results);
@@ -329,96 +336,97 @@ sap.ui.define([
                 });
             });
         },
-        onSearch: async function (oEvent) {
-            var oCompanyCode = this.getView().byId("id_companyCode").getTokens();
-            var oHouseBank = this.getView().byId("id_housebank").getTokens();
-            var oHouseBankAccount = this.getView().byId("id_housebankacc").getTokens();
-            var oTitle = this.getView().byId("id_title");
-            var Date1 = DateValue1;
-            var Date2 = DateValue2;
-            if (oCompanyCode.length < 0 || Date1 === undefined || Date2 === undefined || Date1 === '' || Date2 === '') {
-                this.oFillMessageDialog = new Dialog({
-                    type: DialogType.Message,
-                    title: 'Error',
-                    state: ValueState.Error,
-                    content: new Text({ text: "CompanyCode & Date are Mandatory" }),
-                    beginButton: new Button({
-                        type: DialogType.Emphasized,
-                        text: "Ok",
-                        press: function () {
-                            this.oFillMessageDialog.close();
-                        }.bind(this)
-                    })
-                });
-                this.oFillMessageDialog.open();
-            } else {
-                oBusyDialog.open();
-                var aFilters = [];
-                var companycodeFilter, dateRangeFilter, houseBankFilter, houseBankAccFilter;
-                var oCompanyCodeMulti = [],oHouseBankMulti = [], oHouseBankAccMulti = [];
-                var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
-                var formattedDate1 = oDateFormat.format(new Date(Date1));
-                var formattedDate2 = oDateFormat.format(new Date(Date2));
-                if (oCompanyCode.length > 0) {
-                    oCompanyCode.map(function (oToken){
-                        oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
-                    });
-                    companycodeFilter = new sap.ui.model.Filter({
-                        filters: oCompanyCodeMulti,
-                        and: false
-                    });
-                    aFilters.push(companycodeFilter);
-                }
-                if (formattedDate1 && formattedDate2) {
-                    dateRangeFilter = new sap.ui.model.Filter(
-                        "DateRange", "BT", formattedDate1, formattedDate2
-                    );
-                    aFilters.push(dateRangeFilter);
-                } else {
-                    dateRangeFilter = new sap.ui.model.Filter(
-                        "DateRange", "BT", formattedDate1, formattedDate2
-                    );
-                    aFilters.push(dateRangeFilter);
-                }
-                if (oHouseBank.length > 0) {
-                    oHouseBank.map(function (oToken){
-                        oHouseBankMulti.push(new sap.ui.model.Filter("HouseBank", "EQ", oToken.getText()));
-                    });
-                    houseBankFilter = new sap.ui.model.Filter({
-                        filters: oHouseBankMulti,
-                        and: false
-                    });
-                    aFilters.push(houseBankFilter);
-                }
-                if (oHouseBankAccount.length > 0) {
-                    oHouseBankAccount.map(function (oToken){
-                        oHouseBankAccMulti.push(new sap.ui.model.Filter("HouseBankAccount", "EQ", oToken.getText()));
-                    });
-                    houseBankAccFilter = new sap.ui.model.Filter({
-                        filters: oHouseBankAccMulti,
-                        and: false
-                    });
-                    aFilters.push(houseBankAccFilter);
-                }
-                var oBankStatementModel = this.getOwnerComponent().getModel();
-                let results = await this._getBankStatement(oBankStatementModel, aFilters);
-                if (results.length > 0) {
-                    oStatementDataModel.setData(results);
-                    this.getView().setModel(oStatementDataModel, "BankStatements");
-                    oStatementDataModel.refresh();
-                    var sTitle = 'Bank Statement Report' + '(' + results.length + ')';
-                    oTitle.setText(sTitle)
-                } else {
-                    results = [];
-                    oStatementDataModel.setData(results);
-                    this.getView().setModel(oStatementDataModel, "BankStatements");
-                    oStatementDataModel.refresh();
-                    var sTitle = 'Bank Statement Report';
-                    oTitle.setText(sTitle)
-                }
-                oBusyDialog.close();
-            }
-        },
+        /* onSearch: async function (oEvent) {
+             var oCompanyCode = this.getView().byId("id_companyCode").getTokens();
+             var oHouseBank = this.getView().byId("id_housebank").getTokens();
+             var oHouseBankAccount = this.getView().byId("id_housebankacc").getTokens();
+             var oTitle = this.getView().byId("id_title");
+             var Date1 = DateValue1;
+             var Date2 = DateValue2;
+             if (oCompanyCode.length < 0 || Date1 === undefined || Date2 === undefined || Date1 === '' || Date2 === '') {
+                 this.oFillMessageDialog = new Dialog({
+                     type: DialogType.Message,
+                     title: 'Error',
+                     state: ValueState.Error,
+                     content: new Text({ text: "CompanyCode & Date are Mandatory" }),
+                     beginButton: new Button({
+                         type: DialogType.Emphasized,
+                         text: "Ok",
+                         press: function () {
+                             this.oFillMessageDialog.close();
+                         }.bind(this)
+                     })
+                 });
+                 this.oFillMessageDialog.open();
+             } else {
+                 oBusyDialog.open();
+                 var aFilters = [];
+                 var companycodeFilter, dateRangeFilter, houseBankFilter, houseBankAccFilter;
+                 var oCompanyCodeMulti = [], oHouseBankMulti = [], oHouseBankAccMulti = [];
+                 var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
+                 var formattedDate1 = oDateFormat.format(new Date(Date1));
+                 var formattedDate2 = oDateFormat.format(new Date(Date2));
+                 if (oCompanyCode.length > 0) {
+                     oCompanyCode.map(function (oToken) {
+                         oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
+                     });
+                     companycodeFilter = new sap.ui.model.Filter({
+                         filters: oCompanyCodeMulti,
+                         and: false
+                     });
+                     aFilters.push(companycodeFilter);
+                 }
+                 if (formattedDate1 && formattedDate2) {
+                     dateRangeFilter = new sap.ui.model.Filter(
+                         "DateRange", "BT", formattedDate1, formattedDate2
+                     );
+                     aFilters.push(`(DateRange ge '${formattedDate1}' and DateRange le '${formattedDate2}')`);
+                 } else {
+                     dateRangeFilter = new sap.ui.model.Filter(
+                         "DateRange", "BT", formattedDate1, formattedDate1
+                     );
+                     aFilters.push(`(DateRange ge '${formattedDate1}' and DateRange le '${formattedDate1}')`);
+                 }
+                 if (oHouseBank.length > 0) {
+                     oHouseBank.map(function (oToken) {
+                         oHouseBankMulti.push(new sap.ui.model.Filter("HouseBank", "EQ", oToken.getText()));
+                     });
+                     houseBankFilter = new sap.ui.model.Filter({
+                         filters: oHouseBankMulti,
+                         and: false
+                     });
+                     aFilters.push(houseBankFilter);
+                 }
+                 if (oHouseBankAccount.length > 0) {
+                     oHouseBankAccount.map(function (oToken) {
+                         oHouseBankAccMulti.push(new sap.ui.model.Filter("HouseBankAccount", "EQ", oToken.getText()));
+                     });
+                     houseBankAccFilter = new sap.ui.model.Filter({
+                         filters: oHouseBankAccMulti,
+                         and: false
+                     });
+                     aFilters.push(houseBankAccFilter);
+                 }
+                 //var oBankStatementModel = this.getOwnerComponent().getModel();
+                 var oModel = new sap.ui.model.odata.v2.ODataModel("/odata/v2/bankstatementapi/");
+                 let results = await this._getBankStatement(oModel, aFilters);
+                 if (results.length > 0) {
+                     oStatementDataModel.setData(results);
+                     this.getView().setModel(oStatementDataModel, "BankStatements");
+                     oStatementDataModel.refresh();
+                     var sTitle = 'Bank Statement Report' + '(' + results.length + ')';
+                     oTitle.setText(sTitle)
+                 } else {
+                     results = [];
+                     oStatementDataModel.setData(results);
+                     this.getView().setModel(oStatementDataModel, "BankStatements");
+                     oStatementDataModel.refresh();
+                     var sTitle = 'Bank Statement Report';
+                     oTitle.setText(sTitle)
+                 }
+                 oBusyDialog.close();
+             }
+         }, */
         onValueHelpHouseBankSearch: async function (oEvent) {
             var sValue = oEvent.getParameter("value");
             var oFilter = [], oCompanyCodefilter, ohouseBankfilter;
@@ -426,7 +434,7 @@ sap.ui.define([
             var cCode = this.getView().byId("id_companyCode").getTokens();
             if (cCode.length > 0) {
                 var oCompanyCodeMulti = [];
-                cCode.map(function (oToken){
+                cCode.map(function (oToken) {
                     oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
                 });
                 oCompanyCodefilter = new sap.ui.model.Filter({
@@ -496,7 +504,7 @@ sap.ui.define([
             var aSelectedItems = oTable.getSelectedItems();
             var oValue = oEvent.getParameter('listItem').getCells()[0].getText();
             var removedTokens = oMultiInputSelected.getTokens();
-            if (oSelectedAll === true){
+            if (oSelectedAll === true) {
                 var oTableData = oTable.getModel("CompanyCodes");
                 var aAllData = oTableData.getProperty("/");
                 var index = -1;
@@ -555,46 +563,55 @@ sap.ui.define([
                 oCompanyCodeModel.refresh();
             }
         },
-        okccodeVHDialog: function(oEvent){
+        okccodeVHDialog: function (oEvent) {
             var oTable = this.getView().byId('idccodevaluehelp');
             var oSelectedTokens = this.getView().byId('id_ccode_value_help');
             var oMultiInput = this.getView().byId('id_companyCode');
+            const oVariantFilterModel = this.getView().getModel("variantfilters");
             oMultiInput.removeAllTokens();
             var aTokens = oSelectedTokens.getTokens();
             aTokens.forEach(function (oToken) {
                 if (oToken) {
-                    oMultiInput.addToken(oToken);
+                    oMultiInput.addToken(new sap.m.Token({ key: oToken.getKey(), text: oToken.getText() }));
                 }
             });
-            if(aTokens.length === 0){
+            if (aTokens.length === 0) {
                 oMultiInput.removeAllTokens();
             }
             this.getView().byId("ccodeVHDialog").close();
+            const aTokenData = aTokens.map(oToken => ({
+                key: oToken.getKey(),
+                text: oToken.getText()
+            }));
+            oVariantFilterModel.setProperty("/CompanyCode", JSON.parse(JSON.stringify(aTokenData)));
             oTable.removeSelections(true);
+            var results = [];
+            this._originaldata = results;
+            this.byId("id_SMFBAR").fireFilterChange();
         },
-        closeccodeVHDialog: function(oEvent){
+        closeccodeVHDialog: function (oEvent) {
             var oSelectedTokens = this.getView().byId('id_ccode_value_help');
             var oTable = this.getView().byId('idccodevaluehelp');
             oTable.removeSelections(true);
             oSelectedTokens.removeAllTokens();
             this.getView().byId("ccodeVHDialog").close();
         },
-        onclearccodeVH: function(oEvent){
+        onclearccodeVH: function (oEvent) {
             var oTable = this.getView().byId('idccodevaluehelp');
             var oMultiInputSelected = this.getView().byId('id_ccode_value_help');
             oTable.removeSelections(true);
             oMultiInputSelected.removeAllTokens();
         },
-        OnVHbankSelected: function(oEvent){
+        OnVHbankSelected: function (oEvent) {
             var oMultiInputSelected = this.getView().byId('id_bank_value_help'),
-            oTable = this.getView().byId('idbankvaluehelp');
+                oTable = this.getView().byId('idbankvaluehelp');
             var oSelected = oEvent.getParameter('selected');
             var oRemoved = oEvent.getParameter('removed');
             var oSelectedAll = oEvent.getParameter('selectAll');
             var aSelectedItems = oTable.getSelectedItems();
             var oValue = oEvent.getParameter('listItem').getCells()[0].getText();
             var removedTokens = oMultiInputSelected.getTokens();
-            if (oSelectedAll === true){
+            if (oSelectedAll === true) {
                 var oTableData = oTable.getModel("HouseBanks");
                 var aAllData = oTableData.getProperty("/");
                 var index = -1;
@@ -620,40 +637,49 @@ sap.ui.define([
 
             }
         },
-        onValueHelpHouseBankok: function(oEvent){
+        onValueHelpHouseBankok: function (oEvent) {
             var oTable = this.getView().byId('idbankvaluehelp');
             var oSelectedTokens = this.getView().byId('id_bank_value_help');
             var oMultiInput = this.getView().byId('id_housebank');
+            const oVariantFilterModel = this.getView().getModel("variantfilters");
             oMultiInput.removeAllTokens();
             var aTokens = oSelectedTokens.getTokens();
             aTokens.forEach(function (oToken) {
                 if (oToken) {
-                    oMultiInput.addToken(oToken);
+                    oMultiInput.addToken(new sap.m.Token({ key: oToken.getKey(), text: oToken.getText() }));
                 }
             });
-            if(aTokens.length === 0){
+            if (aTokens.length === 0) {
                 oMultiInput.removeAllTokens();
             }
+            const aTokenData = aTokens.map(oToken => ({
+                key: oToken.getKey(),
+                text: oToken.getText()
+            }));
+            oVariantFilterModel.setProperty("/HouseBank", JSON.parse(JSON.stringify(aTokenData)));
             this.getView().byId("selectBankVH").close();
             oTable.removeSelections(true);
+            var results = [];
+            this._originaldata = results;
+            this.byId("id_SMFBAR").fireFilterChange();
         },
-        onValueHelpHouseBankClose: function(oEvent){
+        onValueHelpHouseBankClose: function (oEvent) {
             var oSelectedTokens = this.getView().byId('id_bank_value_help');
             var oTable = this.getView().byId('idbankvaluehelp');
             oTable.removeSelections(true);
             oSelectedTokens.removeAllTokens();
             this.getView().byId("selectBankVH").close();
         },
-        OnVHbankaccSelected: function(oEvent){
+        OnVHbankaccSelected: function (oEvent) {
             var oMultiInputSelected = this.getView().byId('id_bankacc_value_help'),
-            oTable = this.getView().byId('idbankaccvaluehelp');
+                oTable = this.getView().byId('idbankaccvaluehelp');
             var oSelected = oEvent.getParameter('selected');
             var oRemoved = oEvent.getParameter('removed');
             var oSelectedAll = oEvent.getParameter('selectAll');
             var aSelectedItems = oTable.getSelectedItems();
             var oValue = oEvent.getParameter('listItem').getCells()[0].getText();
             var removedTokens = oMultiInputSelected.getTokens();
-            if (oSelectedAll === true){
+            if (oSelectedAll === true) {
                 var oTableData = oTable.getModel("HouseBankAccounts");
                 var aAllData = oTableData.getProperty("/");
                 var index = -1;
@@ -679,7 +705,8 @@ sap.ui.define([
 
             }
         },
-        onValueHelpHouseBankAccok: function(oEvent){
+        onValueHelpHouseBankAccok: function (oEvent) {
+            const oVariantFilterModel = this.getView().getModel("variantfilters");
             var oTable = this.getView().byId('idbankaccvaluehelp');
             var oSelectedTokens = this.getView().byId('id_bankacc_value_help');
             var oMultiInput = this.getView().byId('id_housebankacc');
@@ -687,29 +714,37 @@ sap.ui.define([
             var aTokens = oSelectedTokens.getTokens();
             aTokens.forEach(function (oToken) {
                 if (oToken) {
-                    oMultiInput.addToken(oToken);
+                    oMultiInput.addToken(new sap.m.Token({ key: oToken.getKey(), text: oToken.getText() }));
                 }
             });
-            if(aTokens.length === 0){
+            if (aTokens.length === 0) {
                 oMultiInput.removeAllTokens();
             }
             this.getView().byId("selectBankAccVH").close();
+            const aTokenData = aTokens.map(oToken => ({
+                key: oToken.getKey(),
+                text: oToken.getText()
+            }));
+            oVariantFilterModel.setProperty("/HouseBankAccount", JSON.parse(JSON.stringify(aTokenData)));
             oTable.removeSelections(true);
+            var results = [];
+            this._originaldata = results;
+            this.byId("id_SMFBAR").fireFilterChange();
         },
-        onValueHelpHouseBankAccClose: function(oEvent){
+        onValueHelpHouseBankAccClose: function (oEvent) {
             var oSelectedTokens = this.getView().byId('id_bankacc_value_help');
             var oTable = this.getView().byId('idbankaccvaluehelp');
             oTable.removeSelections(true);
             oSelectedTokens.removeAllTokens();
             this.getView().byId("selectBankAccVH").close();
         },
-        onclearbankaccVH: function(){
+        onclearbankaccVH: function () {
             var oTable = this.getView().byId('idbankaccvaluehelp');
             var oMultiInputSelected = this.getView().byId('id_bankacc_value_help');
             oTable.removeSelections(true);
             oMultiInputSelected.removeAllTokens();
         },
-        onExport: function(){
+        onExport: function () {
             var aCols, oRowBinding, oSettings, oSheet, oTable;
             if (!this._oTable) {
                 this._oTable = this.byId('table1');
@@ -814,6 +849,166 @@ sap.ui.define([
             });
 
             return aCols;
+        },
+        onSearch: async function (oEvent) {
+            console.log(oEvent);
+            var oCompanyCode = this.getView().byId("id_companyCode").getTokens();
+            var oHouseBank = this.getView().byId("id_housebank").getTokens();
+            var oHouseBankAccount = this.getView().byId("id_housebankacc").getTokens();
+            var oTitle = this.getView().byId("id_title");
+            var Date1 = DateValue1;
+            var Date2 = DateValue2;
+            if (oCompanyCode.length < 0 || Date1 === undefined || Date2 === undefined || Date1 === '' || Date2 === '') {
+                this.oFillMessageDialog = new Dialog({
+                    type: DialogType.Message,
+                    title: 'Error',
+                    state: ValueState.Error,
+                    content: new Text({ text: "CompanyCode & Date are Mandatory" }),
+                    beginButton: new Button({
+                        type: DialogType.Emphasized,
+                        text: "Ok",
+                        press: function () {
+                            this.oFillMessageDialog.close();
+                        }.bind(this)
+                    })
+                });
+                this.oFillMessageDialog.open();
+            } else {
+                oBusyDialog.open();
+                var aFilters = [];
+                var companycodeFilter, dateRangeFilter, houseBankFilter, houseBankAccFilter;
+                var oCompanyCodeMulti = [], oHouseBankMulti = [], oHouseBankAccMulti = [];
+                var oDateFormat = sap.ui.core.format.DateFormat.getDateInstance({ pattern: "yyyy-MM-dd" });
+                var formattedDate1 = oDateFormat.format(new Date(Date1));
+                var formattedDate2 = oDateFormat.format(new Date(Date2));
+                if (oCompanyCode.length > 0) {
+                    oCompanyCode.map(function (oToken) {
+                        oCompanyCodeMulti.push(new sap.ui.model.Filter("CompanyCode", "EQ", oToken.getText()));
+                    });
+                    companycodeFilter = new sap.ui.model.Filter({
+                        filters: oCompanyCodeMulti,
+                        and: false
+                    });
+                    aFilters.push(companycodeFilter);
+                }
+                if (formattedDate1 && formattedDate2) {
+                    dateRangeFilter = new sap.ui.model.Filter(
+                        "DateRange", "BT", formattedDate1, formattedDate2
+                    );
+                    aFilters.push(dateRangeFilter);
+                } else {
+                    dateRangeFilter = new sap.ui.model.Filter(
+                        "DateRange", "BT", formattedDate1, formattedDate2
+                    );
+                    aFilters.push(dateRangeFilter);
+                }
+                if (oHouseBank.length > 0) {
+                    oHouseBank.map(function (oToken) {
+                        oHouseBankMulti.push(new sap.ui.model.Filter("HouseBank", "EQ", oToken.getText()));
+                    });
+                    houseBankFilter = new sap.ui.model.Filter({
+                        filters: oHouseBankMulti,
+                        and: false
+                    });
+                    aFilters.push(houseBankFilter);
+                }
+                if (oHouseBankAccount.length > 0) {
+                    oHouseBankAccount.map(function (oToken) {
+                        oHouseBankAccMulti.push(new sap.ui.model.Filter("HouseBankAccount", "EQ", oToken.getText()));
+                    });
+                    houseBankAccFilter = new sap.ui.model.Filter({
+                        filters: oHouseBankAccMulti,
+                        and: false
+                    });
+                    aFilters.push(houseBankAccFilter);
+                }
+                var oBankStatementModel = this.getOwnerComponent().getModel();
+                if (this._originaldata.length > 0) {
+                    oBusyDialog.close();
+                    return;
+                }
+                let results = await this._getBankStatement(oBankStatementModel, aFilters);
+                if (results.length > 0) {
+                    this._originaldata = results;
+                    oStatementDataModel.setData(results);
+                    this.getView().setModel(oStatementDataModel, "BankStatements");
+                    oStatementDataModel.refresh();
+                    const oSmartTable = this.byId("idST");
+                    const oTable = oSmartTable.getTable();
+                    oTable.setModel(oStatementDataModel);
+                    oTable.bindItems({
+                        path: "/",
+                        template: oTable.getBindingInfo("items")?.template
+                    });
+                } else {
+                    results = [];
+                    this._originaldata = results;
+                    oStatementDataModel.setData(results);
+                    this.getView().setModel(oStatementDataModel, "BankStatements");
+                    oStatementDataModel.refresh();
+
+                }
+                oBusyDialog.close();
+            }
+        },
+        onCompanyCodeTokenUpdate: function (oEvent) {
+            const sType = oEvent.getParameter("type");
+            var results = [];
+            this._originaldata = results;
+            if (sType === "removed") {
+                const oMultiInput = oEvent.getSource();
+                const aTokens = oMultiInput.getTokens();
+                const aPlainTokens = aTokens.map(t => ({
+                    key: t.getKey(),
+                    text: t.getText()
+                }));
+
+                this.getView().getModel("variantfilters").setProperty("/CompanyCode", aPlainTokens);
+
+                this.byId("id_SMFBAR").fireFilterChange();
+            }
+        },
+        onHouseBankTokenUpdate: function (oEvent) {
+            const sType = oEvent.getParameter("type");
+            var results = [];
+            this._originaldata = results;
+            if (sType === "removed") {
+                const oMultiInput = oEvent.getSource();
+                const aTokens = oMultiInput.getTokens();
+                const aPlainTokens = aTokens.map(t => ({
+                    key: t.getKey(),
+                    text: t.getText()
+                }));
+
+                this.getView().getModel("variantfilters").setProperty("/HouseBank", aPlainTokens);
+
+                this.byId("id_SMFBAR").fireFilterChange();
+            }
+        },
+        onHouseBankAccTokenUpdate: function (oEvent) {
+            const sType = oEvent.getParameter("type");
+            var results = [];
+            this._originaldata = results;
+            if (sType === "removed") {
+                const oMultiInput = oEvent.getSource();
+                const aTokens = oMultiInput.getTokens();
+                const aPlainTokens = aTokens.map(t => ({
+                    key: t.getKey(),
+                    text: t.getText()
+                }));
+
+                this.getView().getModel("variantfilters").setProperty("/HouseBankAccount", aPlainTokens);
+
+                this.byId("id_SMFBAR").fireFilterChange();
+            }
+        },
+        onExit: function () {
+           // this.getView().byId("id_companycodeVH").destroy();
+           // this.getView().byId("id_housebankVH").destroy();
+           // this.getView().byId("id_houseaccVH").destroy();
+           // var results = [];
+           // this._originaldata = results;
         }
     });
+
 });

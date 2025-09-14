@@ -58,8 +58,10 @@ module.exports = cds.service.impl(async function (srv) {
                 ouserRoles = userRoles.data.value;
             }
         }
-        const filteredRoles = ouserRoles.filter(role => role.BusinessRoleID.startsWith('YHP'));
+        const filteredRoles = ouserRoles.filter(role => role.BusinessRoleID.includes('FIN_TREASURY'));
         const filteredRolesFinal = filteredRoles.filter(role => role.BusinessRoleID.startsWith('YHPXXXX'));
+        console.log(filteredRoles);
+        console.log(filteredRolesFinal);
         const companyCodeData = await executeHttpRequest(
             {
                 destinationName: 'S4HANABASICAUTH'
@@ -91,10 +93,12 @@ module.exports = cds.service.impl(async function (srv) {
             }
 
         }else{
-            const trimmedRoles = filteredRolesFinal.map(role => ({
+            console.log('---passed---')
+            const trimmedRoles = filteredRoles.map(role => ({
                 ...role,
-                TrimmedBusinessRoleID: role.BusinessRoleID.substring(2, 8)
+                TrimmedBusinessRoleID: role.BusinessRoleID.substring(3, 7)
               }));
+            console.log(trimmedRoles);
             const companyCodeResults = companyCodeData.data.d.results;
             const companyCodes = companyCodeResults.map(item => ({
                 companyCode: item.CompanyCode,
@@ -124,6 +128,7 @@ module.exports = cds.service.impl(async function (srv) {
     };
     srv.on('READ',CompanyCodeVH, async (req) => {
         var aFilter = req.query.SELECT.where;
+        var suser = req.user.id;
         if(aFilter){
             if (aFilter.length === 7){
                 for (let i = 0; i < aFilter.length; i++) {
@@ -150,6 +155,7 @@ module.exports = cds.service.impl(async function (srv) {
                     var record = {};
                     record.CompanyCode = element.companyCode;
                     record.CompanyCodeName = element.companyCodeName;
+                    record.Emailid = suser;
                     aRecord.push(record);
                 });
              return aRecord;

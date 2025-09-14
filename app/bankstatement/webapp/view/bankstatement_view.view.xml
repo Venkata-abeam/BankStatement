@@ -1,214 +1,48 @@
-<mvc:View controllerName="bankstatement.controller.bankstatement_view"
+<mvc:View  controllerName="bankstatement.controller.bankstatement_view"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:layout="sap.ui.layout"
     xmlns:form="sap.ui.layout.form"
-    xmlns:unified="sap.ui.unified"
     xmlns="sap.m"
-    xmlns:plugins="sap.m.plugins"
-    xmlns:columnmenu="sap.m.table.columnmenu"
-    xmlns:sap.ui.fl="sap.ui.fl"
-    xmlns:sap.ui.dt="sap.ui.dt"
-    xmlns:vm="sap.ui.fl.variants"
-    xmlns:dnd="sap.ui.core.dnd"
-    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
-    xmlns:table="sap.ui.table">
-    <Page id="page" title="{i18n>title}">
-    <content>
-    <VBox id="id_vbox1">
-        <Panel id="id_panel1" headerText="Selection Screen">
-             <layout:HorizontalLayout id="id_horizontal_layout" class="sapUiSmallMargin">
-                <layout:VerticalLayout id="id_vertical_space0" class="sapUiSmallMarginEnd" width="2rem">
-                </layout:VerticalLayout>
-                 <layout:VerticalLayout id="id_vertical_layout1" class="sapUiSmallMarginEnd">
-                    <Label id="id_companyCode_text" text="Company Code:" design="Bold" width="11rem" required="true" labelFor="id_companyCode" />
-                    <MultiInput id="id_companyCode" showValueHelp="true" width="15rem" valueHelpRequest="ccodeVH" change="onccodeChange"/>
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_space1" class="sapUiSmallMarginEnd" width="3rem">
-                </layout:VerticalLayout>
-                 <layout:VerticalLayout id="id_vertical_layout2" class="sapUiSmallMarginEnd">
-                    <Label id="id_housebank_text" text="House Bank:" design="Bold" width="11rem" labelFor="id_companyCode" />
-                    <MultiInput id="id_housebank" showValueHelp="true" valueHelpRequest="housebankVH" width="15rem" />
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_space2" class="sapUiSmallMarginEnd" width="3rem">
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_layout3" class="sapUiSmallMarginEnd">
-                    <Label id="id_housebankacc_text" text="House Bank Account:" design="Bold" width="11rem"  labelFor="id_companyCode" />
-                    <MultiInput id="id_housebankacc" showValueHelp="true" valueHelpRequest="housebankAccVH" width="15rem"/>
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_space3" class="sapUiSmallMarginEnd" width="3rem">
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_layout4" class="sapUiSmallMarginEnd">
-                    <Label id="id_daterange_text" text="Date Range:" design="Bold" width="11rem" required="true" labelFor="id_companyCode" />
-                    <DateRangeSelection id="id_daterange1" showCurrentDateButton="true"
-                     change="handleDateChange"
-                     value="{
-                                'type': 'sap.ui.model.type.DateInterval',
-                                'formatOptions': {
-                                    'pattern':'yyyy-MM-dd'
-                                },
-                                'parts':[
-                                    {
-                                      'type':'sap.ui.model.type.Date',
-                                      'path':'DateModel>/start'
-                                    },
-                                    {
-                                      'type': 'sap.ui.model.type.Date',
-                                      'path': 'DateModel>/end'
-                                    }
-                                ]
-                            }"
-                    />
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_space4" class="sapUiSmallMarginEnd" width="3rem">
-                </layout:VerticalLayout>
-                <layout:VerticalLayout id="id_vertical_layout5" class="sapUiSmallMarginEnd">
-                    <Text id="textspace"></Text>
-                    <Button id="id_search" press="onSearch" text="Search" type="Emphasized" />
-                </layout:VerticalLayout>
-            </layout:HorizontalLayout>
-        </Panel>
-    </VBox>
-    <Label id="text_space"></Label>
-<table:Table
-                id="table1"
-                ariaLabelledBy="title"
-                selectionMode="None"
-                rows="{BankStatements>/}"
-            >
-        <table:extension>
-             <OverflowToolbar id="id_overflow" style="Clear">
-                <Text id="id_title" text="Bank Statement Report" />
-                <ToolbarSpacer id="id_tabletoolbar" ></ToolbarSpacer>
-                <Button id="excel_option1" icon="sap-icon://excel-attachment" press="onExport"/>
-             </OverflowToolbar>
-		</table:extension>
-        <table:columns>
-                <table:Column
-                    id="col_companycode"
-                    width="7.5rem"
-                    filterProperty="CompanyCode"
-                    sortProperty="CompanyCode">
-						<Label id="label_companycode" text="Company Code" wrapping="true" />
-                        <table:template>
-                            <Text id="text_companycode" text="{BankStatements>CompanyCode}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_companycodename"
-                    width="7rem"
-                    filterProperty="CompanyCodeName"
-                    sortProperty="CompanyCodeName">
-						<Label id="label_companycodename" text="CompanyCode Name" wrapping="true" />
-                        <table:template>
-                            <Text id="text_companycodename" text="{BankStatements>CompanyCodeName}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_housebank"
-                    width="7rem"
-                    filterProperty="HouseBank"
-                    sortProperty="HouseBank">
-						<Label id="label_housebank" text="House Bank" wrapping="true" />
-                        <table:template>
-                            <Text id="text_housebank" text="{BankStatements>HouseBank}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_housebankacc"
-                    width="9.5rem"
-                    filterProperty="HouseBankAccount"
-                    sortProperty="HouseBankAccount">
-						<Label id="label_housebankacc" text="House Bank Account" wrapping="true" />
-                        <table:template>
-                            <Text id="text_housebankacc" text="{BankStatements>HouseBankAccount}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_bankname"
-                    width="7rem"
-                    filterProperty="BankName"
-                    sortProperty="BankName">
-						<Label id="label_bankname" text="Bank Name" wrapping="true" />
-                        <table:template>
-                            <Text id="text_bankname" text="{BankStatements>BankName}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_bankaccount"
-                    width="7rem"
-                    filterProperty="BankAccount"
-                    sortProperty="BankAccount">
-						<Label id="label_bankaccount" text="Bank Account" wrapping="true" />
-                        <table:template>
-                            <Text id="text_bankaccount" text="{BankStatements>BankAccount}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_bankaccountdesc"
-                    width="7rem"
-                    filterProperty="BankAccountDescription"
-                    sortProperty="BankAccountDescription">
-						<Label id="label_bankaccountdesc" text="Bank Account Description" wrapping="true" />
-                        <table:template>
-                            <Text id="text_bankaccountdesc" text="{BankStatements>BankAccountDescription}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_openbalance"
-                    width="7rem"
-                    >
-						<Label id="label_openbalance" text="Opening Balance" wrapping="true" />
-                        <table:template>
-                            <Text id="text_openbalance" text="{BankStatements>OpeningBalance}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_opendate"
-                    width="7rem"
-                    filterProperty="OpenDate"
-                    sortProperty="OpenDate">
-						<Label id="label_opendate" text="Opening Date" wrapping="true" />
-                        <table:template>
-                            <Text id="text_opendate" text="{BankStatements>OpenDate}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_closingbalance"
-                    width="8rem"
-                   >
-						<Label id="label_closingbalance" text="Closing Balance" wrapping="true" />
-                        <table:template>
-                            <Text id="text_closingbalance" text="{BankStatements>ClosingBalance}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_closingdate"
-                    width="7rem"
-                    filterProperty="CloseDate"
-                    sortProperty="CloseDate">
-						<Label id="label_closingdate" text="Closing Date" wrapping="true" />
-                        <table:template>
-                            <Text id="text_closingdate" text="{BankStatements>CloseDate}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_cashinflow"
-                    width="7rem">
-						<Label id="label_cashinflow" text="Cash Inflow" wrapping="true" />
-                        <table:template>
-                            <Text id="text_cashinflow" text="{BankStatements>CashInflow}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-                <table:Column
-                    id="col_cashoutflow"
-                    width="7rem">
-						<Label id="label_cashoutflow" text="Cash Outflow" wrapping="true" />
-                        <table:template>
-                            <Text id="text_cashoutflow" text="{BankStatements>CashOutflow}" wrapping="false" />
-                        </table:template>
-				</table:Column>
-        </table:columns>
-    </table:Table>
-    </content>
-    </Page>
+	xmlns:f="sap.f"
+    xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:smartVariantManagement="sap.ui.comp.smartvariants"
+	xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
+    xmlns:smarttable="sap.ui.comp.smarttable">
+		<f:DynamicPage id="id_page_header1">
+		<f:header>
+		<f:DynamicPageHeader id="id_page_header">
+		<f:content>
+				<smartfilterbar:SmartFilterBar entitySet="BankStatement" id="id_SMFBAR" persistencyKey="SFB" useDateRangeType="true">
+					<smartfilterbar:controlConfiguration>
+						<smartfilterbar:ControlConfiguration id="id_cc1"
+						key="CompanyCode"
+						mandatory="mandatory"
+						label="Company Code" />
+
+						<smartfilterbar:ControlConfiguration id="id_cc2"
+						key="DateRange"
+						controlType="date"
+						conditionType="{defaultOperation: 'TODAY'}"
+						mandatory="mandatory"
+						label="Date Range" />
+
+					</smartfilterbar:controlConfiguration>
+					<smartfilterbar:layoutData>
+						<FlexItemData id="id_filflex" shrinkFactor="0"/>
+					</smartfilterbar:layoutData>
+				</smartfilterbar:SmartFilterBar>
+		</f:content>
+		</f:DynamicPageHeader>
+		</f:header>
+		<f:content>	
+				<smarttable:SmartTable id="idST" entitySet="BankStatement" enableAutoBinding="true" 
+				header="Bank Statements" tableType="ResponsiveTable" useVariantManagement="true" useTablePersonalisation="true" useExportToExcel="true"
+				persistencyKey="STB" smartFilterId="id_SMFBAR" demandPopin="true" class="sapUiResponsiveContentPadding" showRowCount="true">
+				<smarttable:layoutData>
+					<FlexItemData id="id_flexdata" growFactor="1" baseSize="0%"/>
+				</smarttable:layoutData>
+				<Table id="id_table" sticky="ColumnHeaders,HeaderToolbar" />
+				</smarttable:SmartTable>
+		</f:content>
+		</f:DynamicPage>
 </mvc:View>

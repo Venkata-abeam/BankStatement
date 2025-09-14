@@ -102,6 +102,7 @@ resources:
               - Authentication: NoAuthentication
                 HTML5.DynamicDestination: true
                 HTML5.ForwardAuthToken: true
+                HTML5.Timeout: 680000
                 Name: srv-api
                 ProxyType: Internet
                 Type: HTTP
@@ -121,6 +122,7 @@ resources:
           forwardAuthToken: true
           name: srv-api
           url: ~{srv-url}
+          timeout: 680000
   - name: bankstatement-html5-repo-host
     type: org.cloudfoundry.managed-service
     parameters:

@@ -26,6 +26,7 @@
         "type": "OData",
         "settings": {
           "annotations": [],
+          "localUri": "localService/mainService/metadata.xml",
           "odataVersion": "2.0"
         }
       },
@@ -112,9 +113,9 @@
         "dataSource": "mainService",
         "preload": true,
         "settings": {
-          "operationMode": "Server",
-          "autoExpandSelect": true,
-          "earlyRequests": true
+          "metadataUrlParams": {
+            "sap-value-list": "none"
+          }
         }
       },
       "HouseBankVH": {
@@ -161,6 +162,7 @@
         "type": "View",
         "viewType": "XML",
         "path": "bankstatement.view",
+        "entitySet": "BankStatement",
         "async": true,
         "viewPath": "bankstatement.view"
       },
