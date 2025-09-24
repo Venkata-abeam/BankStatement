@@ -23,7 +23,7 @@ module.exports = cds.service.impl(async function (srv) {
 
   var companyCodefilterVH, userId;
   var houseBankFilter;
-  
+
   var oStartDate;
   var oEndDate;
   var houseBankfilter = [];
@@ -95,7 +95,6 @@ module.exports = cds.service.impl(async function (srv) {
       });
 
       const bankStatementsfilteredData = bankStatements;
-      console.log('bankStatements',bankStatements);
       const bankstatementFunction = async function (bankStatementsfilteredData) {
         const grouped = new Map();
 
@@ -208,7 +207,6 @@ module.exports = cds.service.impl(async function (srv) {
 
           //If Statement there
           if (statement) {
-            console.log('Statement Passed',statement);
             const statementData = statement;
             const startDate = new Date('2024-01-01');
             const openingEndDate = parseZone(oStartDate).subtract(1, 'day').format('YYYY-MM-DD');
@@ -246,7 +244,6 @@ module.exports = cds.service.impl(async function (srv) {
               statementClosingDate = statementData.closingDate;
               statementClosingBalance = formatNumber(statementclose);
             } else {
-              // console.log('---else satisfied---closing balance');
               const bankGLLinesClosing = await yy1_BankgllineapiApi.requestBuilder().getAll().top(9999999).select(
                 yy1_BankgllineapiApi.schema.ALL_FIELDS
               ).filter(
@@ -269,7 +266,6 @@ module.exports = cds.service.impl(async function (srv) {
               statementClosingBalance = formatNumber(statementcloseamount);
             }
           } else {
-            console.log('Passed','')
             const startDate = new Date('2024-01-01');
             const openingEndDate = parseZone(oStartDate).subtract(1, 'day').format('YYYY-MM-DD');
             const closingEndDate = new Date(oEndDate);
@@ -292,7 +288,7 @@ module.exports = cds.service.impl(async function (srv) {
               return sum.plus(new BigNumber(gl.amountInTransactionCurrency));
             }, new BigNumber(0));
             statementOpeningBalance = formatNumber(statementopenamount);
-            if (bankGLLinesOpening.length > 0) Currency = bankGLLinesOpening[0].companyCodeCurrency;
+            if (bankGLLinesOpening.length > 0) Currency = bankGLLinesOpening[0].transactionCurrency;
             const bankGLLinesClosing = await yy1_BankgllineapiApi.requestBuilder().getAll().top(9999999).select(
               yy1_BankgllineapiApi.schema.ALL_FIELDS
             ).filter(
@@ -312,8 +308,9 @@ module.exports = cds.service.impl(async function (srv) {
               return sum.plus(new BigNumber(gl.amountInTransactionCurrency));
             }, new BigNumber(0));
             statementClosingBalance = formatNumber(statementcloseamount);
-            Currency = ( bankGLLinesOpening.length > 0 ) ? bankGLLinesOpening[0].companyCodeCurrency : ( bankGLLinesClosing.length > 0 ) ? bankGLLinesClosing[0].companyCodeCurrency : '';
+            Currency = (bankGLLinesOpening.length > 0) ? bankGLLinesOpening[0].transactionCurrency : (bankGLLinesClosing.length > 0) ? bankGLLinesClosing[0].transactionCurrency : '';
           }
+
 
           //Inflow and outflow Data
           let inflow = new BigNumber(0);
@@ -325,7 +322,7 @@ module.exports = cds.service.impl(async function (srv) {
             } else if (entry.amountInTransactionCurrency < 0) {
               outflow -= new BigNumber(entry.amountInTransactionCurrency);
             }
-            Currency = ( Currency == "" ) ? entry.companyCodeCurrency : Currency;
+            Currency = (Currency == "") ? entry.transactionCurrency : Currency;
           });
 
           Inflow = formatNumber(inflow);
@@ -354,7 +351,7 @@ module.exports = cds.service.impl(async function (srv) {
       const result = await combinedData(houseBanksfilteredData, bankStatementResults, bankGLLinesfilteredData, oStartDate, oEndDate);
       return result
         .sort((a, b) => parseInt(a.companyCode) - parseInt(b.companyCode));
-      
+
     } else {
       result = []
       return result;
@@ -376,7 +373,6 @@ module.exports = cds.service.impl(async function (srv) {
 
       for (let i = 0; i < whereClause.length; i++) {
         const item = whereClause[i];
-
         // 🔁 Handle nested expressions
         if (item?.xpr && Array.isArray(item.xpr)) {
           extract(item.xpr);
@@ -401,7 +397,6 @@ module.exports = cds.service.impl(async function (srv) {
         ) {
           const field = item.ref[0];
           const valueNode = whereClause[i + 2];
-
           if (valueNode?.val !== undefined) {
             addToResult(field, valueNode.val);
             i += 2;
@@ -415,6 +410,22 @@ module.exports = cds.service.impl(async function (srv) {
             continue;
           }
         }
+        if (item.func && item.args && Array.isArray(item.args)) {
+          if (item.func.toLowerCase() === 'contains') {
+            // args: [ { ref: [field] }, { val: '...' } ]
+            const fieldArg = item.args[0];
+            const valArg = item.args[1];
+
+            if (fieldArg?.ref && Array.isArray(fieldArg.ref) && valArg?.val !== undefined) {
+              const field = fieldArg.ref[0];
+              const value = valArg.val;
+              addToResult(field, value);
+              continue;
+            }
+          }
+
+          // You can add more function handling here if needed
+        }
       }
     }
 
@@ -422,14 +433,40 @@ module.exports = cds.service.impl(async function (srv) {
     return result;
   };
 
-
   srv.on('READ', BankStatement, async (req) => {
     const aFilter = req.query.SELECT.where;
+    userId = req.user.id == 'anonymous' ? 'ateo@abeam.com' : req.user.id;
     var ofiltersData = await extractfilterquery(req.query);
     if (ofiltersData) {
       const CompanyCodeResults = ofiltersData.CompanyCode ?? [];
+      var CCodeVHTab = await getCompanyVH().then(
+        cCodeVHs => {
+          var aRecord = [];
+          cCodeVHs.forEach(element => {
+            var record = {};
+            record.CompanyCode = element.companyCode;
+            record.CompanyCodeName = element.companyCodeName;
+            //record.Emailid = userId;
+            aRecord.push(record);
+          });
+          return aRecord;
+        }
+      );
+      if (CCodeVHTab.length === 0) {
+        var BankTab = []
+        return BankTab;
+      }
+      const companyCodes = CCodeVHTab.map(item => item.CompanyCode);
       if (CompanyCodeResults.length > 0) {
-        companyCodefilter = CompanyCodeResults;
+        const companycodesList = CompanyCodeResults.filter(code => companyCodes.includes(code));
+        companyCodefilter = companycodesList;
+        if (companyCodefilter.length === 0) {
+          var BankTab = []
+          return BankTab;
+        }
+      } else {
+        var BankTab = []
+        return BankTab;
       }
       const HouseBankResults = ofiltersData.HouseBank ?? [];
       if (HouseBankResults.length > 0) {
@@ -466,7 +503,7 @@ module.exports = cds.service.impl(async function (srv) {
           record.ClosingBalance = element.ClosingBalance;
           record.CloseDate = element.CloseDate;
           record.GLAccount = element.GlAccount;
-          record.Currency  = element.Currency || "";
+          record.Currency = element.Currency || "";
           record.CashInflow = element.CashInflow;
           record.CashOutflow = element.CashOutflow;
           aRecord.push(record);
@@ -890,8 +927,8 @@ module.exports = cds.service.impl(async function (srv) {
     return uniqueBankVH;
   });
 
-  srv.on('READ',MyEmail, async (req) => {
-    return {Emailid: req.user.id,EmailAddress: req.user.id }
+  srv.on('READ', MyEmail, async (req) => {
+    return { Emailid: req.user.id, EmailAddress: req.user.id }
   })
 
 })
