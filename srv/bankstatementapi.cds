@@ -57,7 +57,8 @@ service bankstatementapi @(path: '/bankstatementapi') {
                 '' as ClosingBalance : String,
                 '' as CloseDate      : String,
                 '' as CashInflow     : String,
-                '' as CashOutflow    : String
+                '' as CashOutflow    : String,
+                '' as LastUploadDate : Date
         };
 
 }
@@ -176,6 +177,13 @@ annotate bankstatementapi.BankStatement with @(
             $Type             : 'UI.DataField',
             Value             : Currency,
             Label             : 'Currency',
+            @HTML5.CssDefaults: {width: '8em'},
+            @UI.Importance    : #High,
+        },
+        {
+            $Type             : 'UI.DataField',
+            Value             : LastUploadDate,
+            Label             : 'Last  Upload Date',
             @HTML5.CssDefaults: {width: '8em'},
             @UI.Importance    : #High,
         }

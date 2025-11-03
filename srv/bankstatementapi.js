@@ -2,6 +2,7 @@ const cds = require('@sap/cds');
 const proxy = require('@cap-js-community/odata-v2-adapter');
 const { or } = require('@sap-cloud-sdk/odata-v2');
 const { and } = require('@sap-cloud-sdk/odata-v2');
+const { desc } = require('@sap-cloud-sdk/odata-v2');
 const { parseZone, isMoment } = require('moment');
 const BigNumber = require('bignumber.js');
 const { Yy1_BankstatementapiApi } = require('./src/generated/YY1_BANKSTATEMENTAPI_CDS_0001/Yy1_BankstatementapiApi');
@@ -94,6 +95,52 @@ module.exports = cds.service.impl(async function (srv) {
         destinationName: 'S4HANABASICAUTH'
       });
 
+      //------Recent upload date-----//
+      const lastUpload = await yy1_BankstatementapiApi.requestBuilder()
+        .getAll()
+        .select(
+          yy1_BankstatementapiApi.schema.COMPANY_CODE,
+          yy1_BankstatementapiApi.schema.HOUSE_BANK,
+          yy1_BankstatementapiApi.schema.HOUSE_BANK_ACCOUNT,
+          yy1_BankstatementapiApi.schema.BANK_STATEMENT_DATE
+        )
+        .filter(
+          and(
+            or(
+              ...companyCodefilter.map(ccode =>
+                yy1_BankstatementapiApi.schema.COMPANY_CODE.equals(ccode)
+              )
+            ),
+            or(
+              ...houseBankfilter.map(housebank =>
+                yy1_BankstatementapiApi.schema.HOUSE_BANK.equals(housebank)
+              )
+            ),
+            or(
+              ...houseBankAccfilter.map(housebankAcc =>
+                yy1_BankstatementapiApi.schema.HOUSE_BANK_ACCOUNT.equals(housebankAcc)
+              )
+            )
+          )
+        )
+        .orderBy(desc(yy1_BankstatementapiApi.schema.BANK_STATEMENT_DATE))
+        .top(9999999)
+        .execute({
+          destinationName: 'S4HANABASICAUTH'
+        });
+
+      // Then, post-process to get the latest per unique combination
+      const latestStatements = [];
+      const seenKeys = new Set();
+
+      for (const entry of lastUpload) {
+        const key = `${entry.COMPANY_CODE}-${entry.HOUSE_BANK}-${entry.HOUSE_BANK_ACCOUNT}`;
+        if (!seenKeys.has(key)) {
+          seenKeys.add(key);
+          latestStatements.push(entry);
+        }
+      }
+
       const bankStatementsfilteredData = bankStatements;
       const bankstatementFunction = async function (bankStatementsfilteredData) {
         const grouped = new Map();
@@ -174,7 +221,7 @@ module.exports = cds.service.impl(async function (srv) {
       const formatNumber = (val) => isNaN(val) ? '-' : parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2 });
 
       const combinedData = async function (houseBanksfilteredData, bankStatementResults, bankGLLinesfilteredData, oStartDate, oEndDate) {
-        var aCombinedFinalData = [];
+        var aCombinedFinalData = [];var lastuploadDate;
         for (const housebank of houseBanksfilteredData) {
           var finaldata = {};
           var StatementopeningDate, statementClosingDate, statementOpeningBalance, statementClosingBalance, Inflow, Outflow, Currency;
@@ -194,6 +241,19 @@ module.exports = cds.service.impl(async function (srv) {
               s.glAccount === glAccount &&
               s.bankAccount === bankAccount
           );
+
+          const lastuploadbycc = lastUpload.filter(
+            u =>
+              u.companyCode === companyCode &&
+              u.houseBank   === houseBank &&
+              u.houseBankAccount === houseBankAccount
+          );
+          if (lastuploadbycc.length > 0){
+            lastuploadDate = lastuploadbycc[0].bankStatementDate;
+          }else{
+            lastuploadDate = "";
+          }
+          
 
           //get GL accounts
           const matchingGLs = bankGLLinesfilteredData.filter(
@@ -283,7 +343,7 @@ module.exports = cds.service.impl(async function (srv) {
             ).execute({
               destinationName: 'S4HANABASICAUTH'
             });
-
+            StatementopeningDate = 'GL Derived';
             const statementopenamount = bankGLLinesOpening.reduce((sum, gl) => {
               return sum.plus(new BigNumber(gl.amountInTransactionCurrency));
             }, new BigNumber(0));
@@ -344,6 +404,7 @@ module.exports = cds.service.impl(async function (srv) {
           finaldata.CashInflow = Inflow;
           finaldata.CashOutflow = Outflow;
           finaldata.Currency = Currency;
+          finaldata.LastUploadDate = (lastuploadDate) ? parseZone(new Date(lastuploadDate)).format('YYYY-MM-DD') : ""
           aCombinedFinalData.push(finaldata);
         }
         return aCombinedFinalData;
@@ -506,6 +567,7 @@ module.exports = cds.service.impl(async function (srv) {
           record.Currency = element.Currency || "";
           record.CashInflow = element.CashInflow;
           record.CashOutflow = element.CashOutflow;
+          record.LastUploadDate = element.LastUploadDate;
           aRecord.push(record);
         });
         return aRecord;

@@ -92,6 +92,7 @@
         <Property Name="CloseDate" Type="Edm.String"/>
         <Property Name="CashInflow" Type="Edm.String"/>
         <Property Name="CashOutflow" Type="Edm.String"/>
+        <Property Name="LastUploadDate" Type="Edm.DateTime" sap:display-format="Date"/>
       </EntityType>
       <Annotations Target="srv.bankstatementapi.HouseBankVH" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="UI.SelectionFields">
@@ -347,6 +348,16 @@
               </Annotation>
               <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
             </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LastUploadDate"/>
+              <PropertyValue Property="Label" String="Last Upload Date"/>
+              <Annotation Term="HTML5.CssDefaults">
+                <Record Type="HTML5.CssDefaultsType">
+                  <PropertyValue Property="width" String="8em"/>
+                </Record>
+              </Annotation>
+              <Annotation Term="UI.Importance" EnumMember="UI.ImportanceType/High"/>
+            </Record>
           </Collection>
         </Annotation>
       </Annotations>
@@ -429,6 +440,9 @@
         <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
       <Annotations Target="srv.bankstatementapi.BankStatement/CashOutflow" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="srv.bankstatementapi.BankStatement/LastUploadDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Core.Computed" Bool="true"/>
       </Annotations>
     </Schema>
